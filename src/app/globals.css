@@ -1,26 +1,244 @@
+
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
+  --background: #f6f3ed;
   --foreground: #171717;
+
+  --color-black: #171717;
+  --color-desert: #c2a46b;
+  --color-gold: #b79555;
+  --color-sand: #f6f3ed;
+  --color-sand-dark: #e8e1d5;
+
+  --color-muted: #716c63;
+  --color-border: #ded7ca;
+
+  --font-body: var(--font-manrope);
+ --font-display: var(--font-barlow);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-desert: var(--color-desert);
+  --color-gold: var(--color-gold);
+  --color-sand: var(--color-sand);
+  --color-sand-dark: var(--color-sand-dark);
+  --font-sans: var(--font-manrope);
+  --font-serif: var(--font-barlow);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 100px;
 }
 
 body {
+  margin: 0;
+  min-height: 100vh;
+  width: 100%;
+  overflow-x: clip;
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-body), sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: var(--color-desert);
+  color: var(--color-black);
+}
+
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button {
+  cursor: pointer;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.font-display {
+  font-family: var(--font-display), "Arial Narrow", sans-serif;
+  font-weight: 700;
+  font-style: normal;
+  text-transform: uppercase;
+  letter-spacing: -0.015em;
+}
+
+.text-gold {
+  color: var(--color-gold);
+}
+
+.text-desert {
+  color: var(--color-desert);
+}
+
+.premium-link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  transition: color 300ms ease;
+}
+
+.premium-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -5px;
+  width: 100%;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 350ms ease;
+}
+
+@media (hover: hover) {
+  .premium-link:hover::after {
+    transform: scaleX(1);
+    transform-origin: left;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+
+/* HERO BACKGROUND - DESKTOP */
+
+.hero-deer-background {
+  background-size: cover;
+  background-position: center 48%;
+}
+
+/* BINOCULAR VIEW */
+
+.binocular-view {
+  -webkit-mask-image:
+    radial-gradient(
+      ellipse 24% 34% at 32% 50%,
+      black 95%,
+      transparent 100%
+    ),
+    radial-gradient(
+      ellipse 24% 34% at 68% 50%,
+      black 95%,
+      transparent 100%
+    );
+
+  mask-image:
+    radial-gradient(
+      ellipse 24% 34% at 32% 50%,
+      black 95%,
+      transparent 100%
+    ),
+    radial-gradient(
+      ellipse 24% 34% at 68% 50%,
+      black 95%,
+      transparent 100%
+    );
+}
+
+/* MOBILE HERO */
+
+@media (max-width: 1023px) {
+  .hero-deer-background {
+    background-size: auto 100%;
+    background-position: 64% center;
+  }
+
+  .binocular-view {
+    -webkit-mask-image:
+      radial-gradient(
+        ellipse 34% 23% at 29% 43%,
+        black 94%,
+        transparent 100%
+      ),
+      radial-gradient(
+        ellipse 34% 23% at 71% 43%,
+        black 94%,
+        transparent 100%
+      );
+
+    mask-image:
+      radial-gradient(
+        ellipse 34% 23% at 29% 43%,
+        black 94%,
+        transparent 100%
+      ),
+      radial-gradient(
+        ellipse 34% 23% at 71% 43%,
+        black 94%,
+        transparent 100%
+      );
+  }
+}
+
+/* SMALL MOBILE */
+
+@media (max-width: 480px) {
+  .hero-deer-background {
+    background-size: auto 82%;
+    background-position: 64% top;
+  }
+}
+
+
+/* NAVBAR - HIGH CONTRAST */
+
+header nav a {
+  color: #f5f0e7;
+}
+
+header nav a:hover {
+  color: #e5b65d;
+}
+
+header input[type="search"] {
+  color: #f5f0e7;
+  caret-color: #e5b65d;
+}
+
+header input[type="search"]::placeholder {
+  color: rgba(245, 240, 231, 0.8);
+}
+
+/* PREMIUM HAMBURGER */
+
+@media (hover: hover) {
+  header button:hover {
+    transition-duration: 300ms;
+  }
+}
+
+/* MOBILE MENU */
+
+#mobile-navigation nav a {
+  color: #f5f0e7;
+}
+
+#mobile-navigation nav a:hover {
+  color: #e5b65d;
 }
