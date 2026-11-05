@@ -482,7 +482,9 @@ export default function Navbar() {
                       hover:!text-[#E5B65D]
                     "
                   >
-                    <span>{item.label}</span>
+                    <span className="normal-case">
+  {item.label}
+</span>
 
                     <ArrowRight
                       size={22}
