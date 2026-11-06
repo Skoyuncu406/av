@@ -10,7 +10,6 @@ import {
   UserRound,
   Heart,
   ShoppingBag,
-  ArrowRight,
   ArrowUpRight,
 } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
@@ -22,14 +21,16 @@ const navigation = [
   { label: "İletişim", href: "/iletisim" },
 ];
 
-const ease = [0.22, 1, 0.36, 1];
+const mobileBottomLinks = [
+  { label: "Kategoriler", href: "/kategoriler" },
+  { label: "Ürünler", href: "/urunler" },
+];
 
 export default function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
 
   const [scrolled, setScrolled] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [search, setSearch] = useState("");
 
@@ -44,43 +45,39 @@ export default function Navbar() {
       passive: true,
     });
 
-    return () =>
+    return () => {
       window.removeEventListener("scroll", handleScroll);
+    };
   }, []);
 
   useEffect(() => {
-    setMenuOpen(false);
     setSearchOpen(false);
   }, [pathname]);
 
   useEffect(() => {
-    if (!menuOpen) return;
-
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
+    if (!searchOpen) return;
 
     const handleEscape = (event) => {
       if (event.key === "Escape") {
-        setMenuOpen(false);
+        setSearchOpen(false);
       }
     };
 
     window.addEventListener("keydown", handleEscape);
 
     return () => {
-      document.body.style.overflow = previousOverflow;
       window.removeEventListener("keydown", handleEscape);
     };
-  }, [menuOpen]);
+  }, [searchOpen]);
 
   const handleSearch = (event) => {
     event.preventDefault();
 
     const query = search.trim();
+
     if (!query) return;
 
     setSearchOpen(false);
-    setMenuOpen(false);
 
     router.push(
       `/urunler?search=${encodeURIComponent(query)}`
@@ -103,14 +100,15 @@ export default function Navbar() {
       <Link
         key={item.href}
         href={item.href}
-        className={`
+        aria-current={active ? "page" : undefined}
+        className="
           group relative whitespace-nowrap
           py-3 text-[11px] font-bold
           uppercase tracking-[0.13em]
           !text-[#F5F0E7]
           transition-colors duration-300
           hover:!text-[#E5B65D]
-        `}
+        "
       >
         {item.label}
 
@@ -132,13 +130,13 @@ export default function Navbar() {
 
   return (
     <>
-      {/* NAVBAR */}
+      {/* MAIN NAVBAR */}
       <header
         className={`
           fixed inset-x-0 top-0 z-[60]
           w-full transition-all duration-500
           ${
-            scrolled || menuOpen
+            scrolled
               ? "bg-[#171717]/85 shadow-[0_8px_35px_rgba(0,0,0,0.15)] backdrop-blur-xl"
               : "bg-gradient-to-b from-black/65 via-black/20 to-transparent"
           }
@@ -148,17 +146,17 @@ export default function Navbar() {
           className={`
             mx-auto grid w-full max-w-[1700px]
             grid-cols-[1fr_auto_1fr]
-            items-center px-4
+            items-center px-3
             transition-[height] duration-500
-            sm:px-8 xl:px-12
+            sm:px-6 lg:px-8 xl:px-12
             ${
               scrolled
                 ? "h-[72px]"
-                : "h-[88px] lg:h-[100px]"
+                : "h-[76px] sm:h-[88px] lg:h-[100px]"
             }
           `}
         >
-          {/* LEFT - DESKTOP SEARCH */}
+          {/* DESKTOP SEARCH */}
           <div className="hidden min-w-0 items-center lg:flex">
             <form
               role="search"
@@ -173,7 +171,11 @@ export default function Navbar() {
               <button
                 type="submit"
                 aria-label="Ürün ara"
-                className="shrink-0 !text-[#E5B65D] transition-colors hover:!text-[#FFE0A1]"
+                className="
+                  shrink-0 !text-[#E5B65D]
+                  transition-colors
+                  hover:!text-[#FFE0A1]
+                "
               >
                 <Search size={21} strokeWidth={1.8} />
               </button>
@@ -198,60 +200,25 @@ export default function Navbar() {
             </form>
           </div>
 
-          {/* MOBILE - PREMIUM HAMBURGER */}
-          <div className="flex items-center lg:hidden">
+          {/* MOBILE LEFT SEARCH */}
+          <div className="flex min-w-0 items-center lg:hidden">
             <button
               type="button"
               aria-label={
-                menuOpen ? "Menüyü kapat" : "Menüyü aç"
+                searchOpen ? "Aramayı kapat" : "Arama yap"
               }
-              aria-expanded={menuOpen}
-              aria-controls="mobile-navigation"
-              onClick={() => {
-                setMenuOpen((prev) => !prev);
-                setSearchOpen(false);
-              }}
-              className="
-                group relative flex h-11 w-11
-                items-center justify-center
-                border border-[#E5B65D]/60
-                !text-[#E5B65D]
-                transition-all duration-300
-                hover:border-[#E5B65D]
-                hover:bg-[#E5B65D]/10
-              "
+              aria-expanded={searchOpen}
+              aria-controls="mobile-search"
+              onClick={() =>
+                setSearchOpen((previous) => !previous)
+              }
+              className={iconClass}
             >
-              <span className="relative block h-5 w-6">
-                <span
-                  className={`
-                    absolute left-0 top-[5px]
-                    h-[2px] bg-[#E5B65D]
-                    transition-all duration-300
-                    ${
-                      menuOpen
-                        ? "w-6 translate-y-[5px] rotate-45"
-                        : "w-6 group-hover:w-4"
-                    }
-                  `}
-                />
-
-                <span
-                  className={`
-                    absolute right-0 top-[15px]
-                    h-[2px] bg-[#E5B65D]
-                    transition-all duration-300
-                    ${
-                      menuOpen
-                        ? "w-6 -translate-y-[5px] -rotate-45"
-                        : "w-4 group-hover:w-6"
-                    }
-                  `}
-                />
-              </span>
+              <Search size={22} strokeWidth={1.8} />
             </button>
           </div>
 
-          {/* CENTER - DESKTOP NAVIGATION */}
+          {/* DESKTOP CENTER NAVIGATION */}
           <nav
             aria-label="Ana navigasyon"
             className="
@@ -288,12 +255,14 @@ export default function Navbar() {
             {navigation.slice(2).map(renderNavLink)}
           </nav>
 
-          {/* MOBILE LOGO */}
+          {/* MOBILE CENTER LOGO */}
           <Link
             href="/"
             aria-label="Ana sayfa"
-            onClick={() => setMenuOpen(false)}
-            className="flex items-center justify-center lg:hidden"
+            className="
+              flex min-w-0 items-center
+              justify-center lg:hidden
+            "
           >
             <Image
               src="/images/logo.png"
@@ -302,31 +271,26 @@ export default function Navbar() {
               height={50}
               priority
               className="
-                h-auto w-[105px]
-                object-contain sm:w-[125px]
+                h-auto w-[94px]
+                object-contain
+                min-[390px]:w-[110px]
+                sm:w-[125px]
               "
             />
           </Link>
 
-          {/* RIGHT - ACTION ICONS */}
-          <div className="flex items-center justify-end gap-0 sm:gap-2">
-            <button
-              type="button"
-              aria-label="Arama"
-              aria-expanded={searchOpen}
-              onClick={() => {
-                setSearchOpen((prev) => !prev);
-                setMenuOpen(false);
-              }}
-              className={`${iconClass} lg:hidden`}
-            >
-              <Search size={20} strokeWidth={1.8} />
-            </button>
-
+          {/* RIGHT ACTION ICONS */}
+          <div
+            className="
+              flex min-w-0 items-center
+              justify-end gap-0
+              sm:gap-2
+            "
+          >
             <Link
               href="/hesabim"
               aria-label="Hesabım"
-              className={`${iconClass} hidden sm:flex`}
+              className={iconClass}
             >
               <UserRound size={21} strokeWidth={1.8} />
             </Link>
@@ -349,10 +313,11 @@ export default function Navbar() {
           </div>
         </div>
 
-        {/* MOBILE SEARCH */}
+        {/* MOBILE SEARCH PANEL */}
         <AnimatePresence>
-          {searchOpen && !menuOpen && (
+          {searchOpen && (
             <motion.form
+              id="mobile-search"
               role="search"
               onSubmit={handleSearch}
               initial={{ height: 0, opacity: 0 }}
@@ -374,6 +339,7 @@ export default function Navbar() {
 
                 <input
                   autoFocus
+                  type="search"
                   value={search}
                   onChange={(event) =>
                     setSearch(event.target.value)
@@ -381,7 +347,7 @@ export default function Navbar() {
                   placeholder="Ne aramıştınız?"
                   aria-label="Ürün ara"
                   className="
-                    w-full border-b
+                    w-full min-w-0 border-b
                     border-[#E5B65D]/50
                     bg-transparent py-3
                     text-sm !text-white
@@ -395,7 +361,7 @@ export default function Navbar() {
                 <button
                   type="submit"
                   aria-label="Aramayı başlat"
-                  className="!text-[#E5B65D]"
+                  className="shrink-0 !text-[#E5B65D]"
                 >
                   <ArrowUpRight size={21} />
                 </button>
@@ -405,189 +371,81 @@ export default function Navbar() {
         </AnimatePresence>
       </header>
 
-      {/* MOBILE MENU */}
-      <AnimatePresence>
-        {menuOpen && (
-          <motion.div
-            id="mobile-navigation"
-            role="dialog"
-            aria-modal="true"
-            aria-label="Mobil navigasyon"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{
-              duration: 0.35,
-              ease,
-            }}
-            className="
-              fixed inset-0 z-[50]
-              flex flex-col overflow-y-auto
-              bg-[#11110F]/70
-              px-7 pb-8 pt-28
-              backdrop-blur-[22px]
-              sm:px-12
-              lg:hidden
-            "
-          >
-            <nav
-              aria-label="Mobil menü"
-              className="
-                mx-auto flex w-full max-w-lg
-                flex-1 flex-col justify-center
-                py-8
-              "
-            >
-              {/* MENU LABEL */}
-              <div className="mb-7 flex items-center gap-4">
-                <span className="h-px w-8 bg-[#E5B65D]" />
+      {/* MOBILE FIXED BOTTOM NAVIGATION */}
+      <nav
+        aria-label="Mobil alt navigasyon"
+        className="
+          fixed inset-x-0 bottom-0 z-[60]
+          border-t border-[#E5B65D]/35
+          bg-[#171717]/90
+          backdrop-blur-xl
+          lg:hidden
+        "
+        style={{
+          paddingBottom: "env(safe-area-inset-bottom, 0px)",
+        }}
+      >
+        <div
+          className="
+            mx-auto grid h-[62px]
+            w-full max-w-[700px]
+            grid-cols-2 items-stretch
+            px-4 sm:px-8
+          "
+        >
+          {mobileBottomLinks.map((item, index) => {
+            const active = pathname === item.href;
 
-                <span
-                  className="
-                    text-[10px] font-bold
-                    uppercase tracking-[0.3em]
-                    !text-[#E5B65D]
-                  "
-                >
-                  Navigasyon
-                </span>
-              </div>
-
-              {/* MENU LINKS */}
-              {navigation.map((item, index) => (
-                <motion.div
-                  key={item.href}
-                  initial={{ opacity: 0, y: 18 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 10 }}
-                  transition={{
-                    duration: 0.4,
-                    delay: index * 0.07,
-                    ease,
-                  }}
-                >
-                  <Link
-                    href={item.href}
-                    onClick={() => setMenuOpen(false)}
-                    className="
-                      group flex items-center
-                      justify-between gap-4
-                      border-b border-[#E5B65D]/35
-                      py-5
-                      font-display
-                      text-[clamp(2.5rem,9vw,4.5rem)]
-                      leading-none
-                      !text-[#F5F0E7]
-                      transition-colors duration-300
-                      hover:!text-[#E5B65D]
-                    "
-                  >
-                    <span className="normal-case">
-  {item.label}
-</span>
-
-                    <ArrowRight
-                      size={22}
-                      strokeWidth={1.6}
-                      className="
-                        shrink-0 !text-[#E5B65D]
-                        transition-transform duration-300
-                        group-hover:translate-x-1
-                      "
-                    />
-                  </Link>
-                </motion.div>
-              ))}
-
-              {/* MOBILE QUICK ACTIONS */}
-              <div
-                className="
-                  mt-10 grid grid-cols-3
-                  border-t border-[#E5B65D]/25
-                  pt-7
-                "
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                aria-current={active ? "page" : undefined}
+                className={`
+                  group relative flex
+                  items-center justify-center
+                  gap-2 text-[12px]
+                  font-bold tracking-[0.09em]
+                  normal-case
+                  transition-colors duration-300
+                  ${
+                    active
+                      ? "!text-[#E5B65D]"
+                      : "!text-[#F5F0E7] hover:!text-[#E5B65D]"
+                  }
+                  ${
+                    index === 0
+                      ? "border-r border-[#E5B65D]/25"
+                      : ""
+                  }
+                `}
               >
-                {[
-                  {
-                    label: "Hesabım",
-                    href: "/hesabim",
-                    Icon: UserRound,
-                  },
-                  {
-                    label: "Favoriler",
-                    href: "/favoriler",
-                    Icon: Heart,
-                  },
-                  {
-                    label: "Sepetim",
-                    href: "/sepet",
-                    Icon: ShoppingBag,
-                  },
-                ].map(({ label, href, Icon }) => (
-                  <Link
-                    key={href}
-                    href={href}
-                    onClick={() => setMenuOpen(false)}
-                    className="
-                      group flex flex-col
-                      items-center justify-center
-                      gap-3 border-r
-                      border-[#E5B65D]/25
-                      last:border-r-0
-                    "
-                  >
-                    <Icon
-                      size={23}
-                      strokeWidth={1.6}
-                      className="
-                        !text-[#E5B65D]
-                        transition-transform duration-300
-                        group-hover:-translate-y-1
-                      "
-                    />
+                <span>{item.label}</span>
 
-                    <span
-                      className="
-                        text-[10px] font-semibold
-                        uppercase tracking-[0.1em]
-                        !text-[#F5F0E7]
-                      "
-                    >
-                      {label}
-                    </span>
-                  </Link>
-                ))}
-              </div>
-            </nav>
-
-            {/* MENU FOOTER */}
-            <div
-              className="
-                mx-auto w-full max-w-lg
-                border-t border-[#E5B65D]/30
-                pt-6
-              "
-            >
-              <div className="flex items-center gap-4">
-                <span className="h-px flex-1 bg-[#E5B65D]/60" />
-
-                <span
+                <ArrowUpRight
+                  size={15}
+                  strokeWidth={1.7}
                   className="
-                    whitespace-nowrap text-[9px]
-                    font-bold uppercase
-                    tracking-[0.2em]
                     !text-[#E5B65D]
+                    transition-transform duration-300
+                    group-hover:translate-x-0.5
+                    group-hover:-translate-y-0.5
                   "
-                >
-                  Doğanın Ruhunu Keşfet
-                </span>
+                />
 
-                <span className="h-px flex-1 bg-[#E5B65D]/60" />
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+                {active && (
+                  <span
+                    className="
+                      absolute inset-x-5 top-0
+                      h-[2px] bg-[#E5B65D]
+                    "
+                  />
+                )}
+              </Link>
+            );
+          })}
+        </div>
+      </nav>
     </>
   );
 }

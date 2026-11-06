@@ -242,3 +242,18 @@ header input[type="search"]::placeholder {
 #mobile-navigation nav a:hover {
   color: #e5b65d;
 }
+
+
+/* MOBILE FIXED BOTTOM NAVIGATION */
+
+@media (max-width: 1023px) {
+  body {
+    padding-bottom: calc(62px + env(safe-area-inset-bottom, 0px));
+  }
+
+  html {
+    scroll-padding-bottom: calc(
+      76px + env(safe-area-inset-bottom, 0px)
+    );
+  }
+}
